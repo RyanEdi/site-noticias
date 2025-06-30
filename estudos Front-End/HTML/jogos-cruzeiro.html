@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Jogos do Cruzeiro 2025</title>
+    <link rel="stylesheet" href="style-escudos.css">
+    <style>
+        body { font-family: Arial, sans-serif; background: #eaf3fa; }
+        h1 { text-align: center; color: #194a9f; }
+        .campeonato { margin: 32px auto; max-width: 600px; }
+        .titulo-campeonato { font-size: 1.3em; color: #0272bc; margin-bottom: 12px; }
+    </style>
+</head>
+<body>
+    <h1>Jogos do Cruzeiro 2025</h1>
+    <div id="jogos"></div>
+
+    <script>
+        // Função para gerar o nome do arquivo do escudo
+        function escudoSrc(nome) {
+            return 'escudos/' + nome
+                .toLowerCase()
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // remove acentos
+                .replace(/ /g, '-') + '.png';
+        }
+
+        fetch('http://localhost:3000/api/jogos')
+            .then(res => res.json())
+            .then(data => {
+                const container = document.getElementById('jogos');
+
+                // Brasileirão
+                const brasileiraoDiv = document.createElement('div');
+                brasileiraoDiv.className = 'campeonato';
+                brasileiraoDiv.innerHTML = '<div class="titulo-campeonato">Brasileirão Betano</div>';
+                data.brasileirao.forEach(jogo => {
+                    brasileiraoDiv.innerHTML += `
+                        <div class="jogo">
+                            <img class="escudo-clube" src="${escudoSrc(jogo.adversario)}" alt="Escudo ${jogo.adversario}">
+                            <div class="info">
+                                <span class="adversario">${jogo.adversario}</span>
+                                <span class="local">${jogo.local}</span>
+                                <span class="rodada">Rodada: ${jogo.rodada}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.appendChild(brasileiraoDiv);
+
+                // Copa do Brasil
+                const copaDiv = document.createElement('div');
+                copaDiv.className = 'campeonato';
+                copaDiv.innerHTML = '<div class="titulo-campeonato">Copa do Brasil</div>';
+                data.copaDoBrasil.forEach(jogo => {
+                    copaDiv.innerHTML += `
+                        <div class="jogo">
+                            <img class="escudo-clube" src="${escudoSrc(jogo.adversario)}" alt="Escudo ${jogo.adversario}">
+                            <div class="info">
+                                <span class="adversario">${jogo.adversario}</span>
+                                <span class="local">${jogo.local}</span>
+                                <span class="fase">${jogo.fase}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.appendChild(copaDiv);
+            })
+            .catch(() => {
+                document.getElementById('jogos').innerHTML = '<p>Não foi possível carregar os jogos.</p>';
+            });
+    </script>
+</body>
+</html>
